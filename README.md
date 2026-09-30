@@ -4,7 +4,7 @@ A clean, freestanding C template for building 64-bit kernels compliant with the 
 
 ### Overview
 
-`nth-c-template` provides a lightweight, battery-included starting point for operating system developers who want to write kernels booted by the [`nth`](https://github.com/Novfensec/nth) bootloader.
+`nth-c-template` provides a lightweight, battery-included starting point for operating system developers who want to write kernels booted by the [`nth`](https://github.com/Novfensec/nth) multi-boot manager.
 
 It includes:
 - **`include/nth_protocol.h`**: Complete definitions for the handoff protocol structures (`NthBootInfo`, `NthFramebuffer`, `NthMemoryDescriptor`).
@@ -110,9 +110,16 @@ rm -rf build
 
 ## Booting with `nth`
 
-1. Copy `build/kernel.elf` into your bootable media or ISO root (e.g., inside `esp/` or alongside `BOOTX64.EFI`).
-2. Run your bootloader image script (such as `mk_iso.sh` in the `nth` repository).
-3. Start the virtual machine with QEMU:
+`nth` features a built-in graphical boot manager. To boot this kernel template:
+
+1. Copy `build/kernel.elf` into your EFI system partition (e.g., inside `esp/` or alongside `BOOTX64.EFI`).
+2. Create an `nth.cfg` boot menu configuration file in the root of the EFI partition and add your kernel:
+   ```ini
+   Nth OS=\kernel.elf
+   ```
+   *(Note: `nth` natively supports multi-booting. You can add Linux EFI stubs or Windows Boot Manager to this same menu!)*
+3. Use your preferred method to create a bootable image (e.g., using `iso_scripts/` or `mk_iso.sh` provided in the `nth` repository).
+4. Start the virtual machine with QEMU:
    ```bash
    qemu-system-x86_64 -bios /path/to/OVMF.fd -cdrom nth_os.iso
    ```
